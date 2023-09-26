@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="as_final"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/tmp/tmp.FeYmIOPXsU/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/tmp/tmp.FeYmIOPXsU/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/tmp/tmp.FeYmIOPXsU/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="as_final">
+				<Option output="/tmp/tmp.FeYmIOPXsU/cmake-build-debug/as_final" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/tmp/tmp.FeYmIOPXsU/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/tmp/tmp.FeYmIOPXsU/."/>
+					<Add directory="/tmp/tmp.FeYmIOPXsU/as"/>
+					<Add directory="/opt/rh/devtoolset-9/root/usr/lib/gcc/x86_64-redhat-linux/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-9/root/usr/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 as_final"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="as_final/fast">
+				<Option output="/tmp/tmp.FeYmIOPXsU/cmake-build-debug/as_final" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/tmp/tmp.FeYmIOPXsU/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/tmp/tmp.FeYmIOPXsU/."/>
+					<Add directory="/tmp/tmp.FeYmIOPXsU/as"/>
+					<Add directory="/opt/rh/devtoolset-9/root/usr/lib/gcc/x86_64-redhat-linux/9/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/opt/rh/devtoolset-9/root/usr/include"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 as_final/fast"/>
+					<CompileFile command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/gmake -j2 -f &quot;/tmp/tmp.FeYmIOPXsU/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/as/config.c">
+			<Option target="as_final"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/as/config.h">
+			<Option target="as_final"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/as/scan.c">
+			<Option target="as_final"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/as/scan.h">
+			<Option target="as_final"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/main.c">
+			<Option target="as_final"/>
+		</Unit>
+		<Unit filename="/tmp/tmp.FeYmIOPXsU/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
