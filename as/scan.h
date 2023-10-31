@@ -44,8 +44,8 @@ whitespace  ::=  (' ' | '\t') (' ' | '\t')*
 #include <unistd.h>
 
 #define SCAN_TOKEN_LEN 64
-#define SCAN_TOKEN_TABLE_LEN 1024
-#define SCAN_INPUT_LEN 2048
+#define SCAN_TOKEN_TABLE_LEN 4096
+#define SCAN_INPUT_LEN 4096
 
 enum scan_token_enum {
     TK_IDENT,    /* (identifier) add, sub, mul, foo, r0, r1, lr, ... */
@@ -57,7 +57,7 @@ enum scan_token_enum {
     TK_COLON,    /* : */
     TK_LPAR,     /* { */
     TK_RPAR,     /* } */
-    TK_RANGE,    /* - */
+    //TK_RANGE,    /* - */
     TK_EXLCA,    /* ! */
     TK_EOL,      /* End of line */
     TK_EOT,      /* End of text */
@@ -67,8 +67,7 @@ enum scan_token_enum {
 
 
 #define SCAN_TOKEN_STRINGS {"IDENT", "DIR", "IMM", "COMMA", \
-                            "LBRACKET", "RBRACKET", "COLON", "LPAR", "RPAR", \
-                            "RANGE", "EXCLA"                                \
+                            "LBRACKET", "RBRACKET", "COLON", "LPAR", "RPAR", "EXCLA",\
                             "EOL", "EOT", "NONE", "ANY"};
 
 struct scan_token_st {
@@ -100,5 +99,6 @@ char * scan_token(char *p, char *end, struct scan_token_st *tp);
 void scan_token_print(struct scan_token_st *t);
 bool scan_table_accept(struct scan_table_st *st, enum scan_token_enum tk_expected);
 void scan_table_accept_any_n(struct scan_table_st *st, int n);
+struct scan_token_st * scan_table_get(struct scan_table_st *st, int i);
 
 #endif //AS_FINAL_SCAN_H

@@ -4,9 +4,14 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/tmp/tmp.FeYmIOPXsU/as/config.c" "/tmp/tmp.FeYmIOPXsU/cmake-build-debug/CMakeFiles/as_final.dir/as/config.c.o"
-  "/tmp/tmp.FeYmIOPXsU/as/scan.c" "/tmp/tmp.FeYmIOPXsU/cmake-build-debug/CMakeFiles/as_final.dir/as/scan.c.o"
-  "/tmp/tmp.FeYmIOPXsU/main.c" "/tmp/tmp.FeYmIOPXsU/cmake-build-debug/CMakeFiles/as_final.dir/main.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/AssemblerException.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/AssemblerException.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/codegen.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/codegen.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/config.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/config.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/instrcution.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/instrcution.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/parse.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/parse.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/scan.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/scan.c.o"
+  "/tmp/tmp.0T5rSkG6GG/as/utility.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/as/utility.c.o"
+  "/tmp/tmp.0T5rSkG6GG/main.c" "/tmp/tmp.0T5rSkG6GG/cmake-build-debug/CMakeFiles/as_final.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 

@@ -59,7 +59,7 @@ char *scan_c_comment(char *p, char *end) {
 }
 
 bool scan_is_whitespace(char c) {
-    return (c == ' ' || c == '\t');
+    return (c == ' ' || c == '\t' || c == '\r');
 }
 
 char * scan_whitespace(char *p, char *end) {
@@ -71,7 +71,7 @@ char * scan_whitespace(char *p, char *end) {
 
 char * scan_ident(char *p, char *end, struct scan_token_st *tp) {
     int i = 0;
-    while ((scan_is_letter(*p) || scan_is_digit(*p) || *p == '_') && (p < end)) {
+    while ((scan_is_letter(*p) || scan_is_digit(*p) || *p == '_'  || *p == '-') && (p < end)) {
         tp->value[i] = *p;
         i += 1;
         p += 1;
@@ -104,13 +104,6 @@ char * scan_signed_integer(char *p, char *end, struct scan_token_st *tp) {
 char * scan_token(char *p, char *end, struct scan_token_st *tp) {
     if (p == end) {
         p = scan_read_token(tp, p, 0, TK_EOT);
-    } else if (*p == '@') {
-        /* Ignore comments that start with @ */
-        p += 1;
-        while (*p != '\n' && p < end) {
-            p += 1;
-        }
-        p = scan_token(p, end, tp);
     } else if ((*p == '/') && (*(p + 1) == '*')) {
         /* Ignore C-style comments */
         p = scan_c_comment(p, end);
@@ -120,6 +113,8 @@ char * scan_token(char *p, char *end, struct scan_token_st *tp) {
         p = scan_token(p, end, tp);
     } else if (scan_is_letter(*p)) {
         p = scan_ident(p, end, tp);
+    } else if(scan_is_digit(*p)) {
+        p = scan_signed_integer(p, end, tp);
     } else if (*p == '#') {
         if(*(p+1) != ':'){
             p = scan_signed_integer(p + 1, end, tp);
@@ -146,17 +141,16 @@ char * scan_token(char *p, char *end, struct scan_token_st *tp) {
         p = scan_read_token(tp, p, 1, TK_LPAR);
     } else if(*p == '}') {
         p = scan_read_token(tp, p, 1, TK_RPAR);
-    } else if(*p == '-') {
-        p = scan_read_token(tp, p, 1, TK_RANGE);
-    } else if(*p == '!') {
+    }
+//    else if(*p == '-') {
+//        p = scan_read_token(tp, p, 1, TK_RANGE);
+//    }
+    else if(*p == '!') {
         p = scan_read_token(tp, p, 1, TK_EXLCA);
-    } else if (*p == '\n') {
+    }
+    else if (*p == '\n') {
         p = scan_read_token(tp, p, 1, TK_EOL);
-    } else if(*p == '\r'){
-        //跳过
-        p += 1;
-        p = scan_token(p, end, tp);
-    } else {
+    }  else {
 //        printf("%c",*p);
 //        scan_error("Invalid character");
         //TODO 跳过处理

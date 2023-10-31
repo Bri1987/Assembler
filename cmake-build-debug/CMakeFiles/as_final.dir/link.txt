@@ -1,1 +1,1 @@
-/usr/bin/cc -g   CMakeFiles/as_final.dir/main.c.o CMakeFiles/as_final.dir/as/config.c.o CMakeFiles/as_final.dir/as/scan.c.o  -o as_final 
+/usr/bin/cc -g   CMakeFiles/as_final.dir/main.c.o CMakeFiles/as_final.dir/as/AssemblerException.c.o CMakeFiles/as_final.dir/as/codegen.c.o CMakeFiles/as_final.dir/as/config.c.o CMakeFiles/as_final.dir/as/instrcution.c.o CMakeFiles/as_final.dir/as/parse.c.o CMakeFiles/as_final.dir/as/scan.c.o CMakeFiles/as_final.dir/as/utility.c.o  -o as_final 
