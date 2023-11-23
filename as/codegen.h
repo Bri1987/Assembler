@@ -13,21 +13,13 @@
 #define SCAN_TOKEN_LEN 64
 #define CODEGEN_TABLE_LEN 256
 
-typedef struct codegen_global_pair {
-    int offset;
-    int occupy;
-    char label[SCAN_TOKEN_LEN];
-    //有初始化值的数组要存值
-    int num[300];
-}codegen_global_pair;
-
 struct codegen_table_st {
     uint32_t table[CODEGEN_TABLE_LEN];
     int len;
     int next;
-    struct codegen_global_pair labels[CODEGEN_TABLE_LEN];
+    struct codegen_global_pair *labels[CODEGEN_TABLE_LEN];
     int label_count;
-    struct codegen_global_pair publics[CODEGEN_TABLE_LEN];
+    struct codegen_global_pair *publics[CODEGEN_TABLE_LEN];
     int public_count;
 };
 

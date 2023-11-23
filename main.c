@@ -10,6 +10,7 @@
 
 HashMap *labelMap;
 HashMap *globVMap;
+HashSet *globLabelSet;     //.global main
 
 struct ArrayList *inst_list;
 
@@ -18,6 +19,7 @@ int main(int argc, char **argv) {
     struct config_st config;
     labelMap = HashMapInit();
     globVMap = HashMapInit();
+    globLabelSet = HashSetInit();
     armasm_config_init(&config);
     armasm_parse_args(argc, argv, &config);
     armasm_read_source(&config);

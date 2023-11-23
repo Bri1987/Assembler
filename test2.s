@@ -1,4 +1,5 @@
         .global P
+        .global main
 P:
         stmfd   sp!,{r4-r5,r11,lr}
         sub     sp,sp,#16
@@ -23,7 +24,6 @@ PLABEL6:
         ldmfd   sp!,{r4-r5,r11,lr}
         bx      lr
 
-        .global main
 main:
         stmfd   sp!,{r11,lr}
         sub     sp,sp,#8

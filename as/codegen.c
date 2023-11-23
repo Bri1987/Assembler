@@ -5,9 +5,34 @@
 #define COND_BIT 28
 
 extern HashMap *labelMap;
+extern HashSet *globLabelSet;
 extern struct ArrayList *inst_list;
 codegen_map_st codegen_cond_map[] = CODEGEN_COND_MAP;
 codegen_opcode_map_st codegen_opcode_map[] = CODEGEN_OPCODE_MAP;
+
+//将labelMap的内容填入codegen_table_
+void addLabels(struct codegen_table_st *ct){
+    HashMapFirst(labelMap);
+    for(Pair* p = HashMapNext(labelMap); p!=NULL; p= HashMapNext(labelMap)){
+        codegen_global_pair *label = (codegen_global_pair*) malloc(sizeof (codegen_global_pair));
+        strcpy(label->label,p->key);
+        int *value = p->value;
+        label->offset = *value;
+        ct->labels[ct->label_count] = label;
+        ct->label_count++;
+
+        HashSetFirst(globLabelSet);
+        for(char* p_label = HashSetNext(globLabelSet); p_label != NULL; p_label = HashSetNext(globLabelSet)){
+            if(strcmp(p_label,p->key)==0){
+                ct->publics[ct->public_count] = label;
+                ct->public_count++;
+                break;
+            }
+        }
+    }
+
+
+}
 
 void codegen_error(char *err) {
     printf("codegen_error: %s\n", err);
@@ -362,7 +387,7 @@ void codegen_programme(struct codegen_table_st *ct){
 
 bool codegen_is_public_label(struct codegen_table_st *ct, struct codegen_global_pair *pl) {
     for (int i = 0; i < ct->public_count; i++) {
-        if (!strcmp(ct->publics[i].label, pl->label)) {
+        if (!strcmp(ct->publics[i]->label, pl->label)) {
             return true;
         }
     }
@@ -375,11 +400,13 @@ void codegen_elf_write(struct codegen_table_st *ct, char *path){
     int binding;
     elf_init(&elf);
 
+    addLabels(ct);
+
     //加入符号表
     for(int i = 0; i < ct->label_count; i++) {
         //TODO labels还没加东西
         //TODO lables和publics还没搞清楚
-        pl = &ct->labels[i];
+        pl = ct->labels[i];
         if (codegen_is_public_label(ct, pl)) {
             binding = STB_GLOBAL;
         } else {

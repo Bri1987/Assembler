@@ -103,16 +103,41 @@ static void align_sections(elf_context *elf) {
         }
     }
 }
+// count_local_symbols() supports the symtab section header sh_info
+static int count_local_symbols(elf_section *sec) {
+    int count = 0;
+    int num_symbols = sec->logical_len / sizeof(Elf32_Sym);
+    Elf32_Sym *syms = (Elf32_Sym*) sec->data;
+    for (int i = 0; i < num_symbols; i++) {
+        if (STB_LOCAL == ELF32_ST_BIND(syms[i].st_info))
+            count++;
+    }
+    return count;
+}
+
+/* append_symbols() takes the symbols from sections[src] and appends
+   them to sections[dest]. This is odd-looking but I realized late in the
+   project that STB_GLOBAL symbols must occur after STB_LOCAL symbols
+   when we write .symtab to disk
+*/
+static void append_symbols(elf_context *elf, int dest, int src) {
+    int num_src_symbols = elf->sections[src].logical_len / sizeof(Elf32_Sym);
+    Elf32_Sym *sym_ptr = (Elf32_Sym*) elf->sections[src].data;
+    elf_section *dest_symtab = &elf->sections[dest];
+    for (int s = 0; s < num_src_symbols; s++)
+        add_symbol(dest_symtab, &sym_ptr[s]);
+
+}
 
 // finalize_shdrs() fills in the section headers
 void finalize_shdrs(elf_context *elf) {
     Elf32_Shdr *shdrs = elf->shdrs;
 
     // Fill in the size of the symbol table
-//    shdrs[SEC_SYMTAB].sh_info = count_local_symbols(&elf->sections[SEC_SYMTAB]);
+    shdrs[SEC_SYMTAB].sh_info = count_local_symbols(&elf->sections[SEC_SYMTAB]);
 //
-//    // Create an aggregated symbol table with locals and globals
-//    append_symbols(elf, SEC_SYMTAB, SEC_GSYMTAB);
+    // Create an aggregated symbol table with locals and globals
+    append_symbols(elf, SEC_SYMTAB, SEC_GSYMTAB);
 
     // Fill in the offset and size of each section
     unsigned int sec_body_len = sizeof(Elf32_Ehdr);

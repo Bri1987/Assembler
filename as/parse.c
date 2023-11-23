@@ -11,6 +11,7 @@
 extern struct ArrayList *inst_list;
 extern HashMap *labelMap;
 extern HashMap *globVMap;
+extern HashSet *globLabelSet;
 
 HashSet *b_inst_set;
 HashSet *global_dataSet;           //存与全局变量相关指令的
@@ -146,7 +147,7 @@ void handle_global() {
 bool getLabel(char* label,HashMap* map){
     HashMapFirst(map);
     for(Pair* pair = HashMapNext(map); pair!=NULL; pair = HashMapNext(map)){
-        if(compareStringLiterals(label,pair->key))
+        if(strcmp(label,pair->key)==0)
             return true;
     }
     return false;
@@ -155,7 +156,7 @@ bool getLabel(char* label,HashMap* map){
 int* returnLabel(char* label,HashMap* map){
     HashMapFirst(map);
     for(Pair* pair = HashMapNext(map); pair!=NULL; pair = HashMapNext(map)){
-        if(compareStringLiterals(label,pair->key))
+        if(strcmp(label,pair->key)==0)
             return pair->value;
     }
     return NULL;
@@ -164,7 +165,7 @@ int* returnLabel(char* label,HashMap* map){
 codegen_global_pair * returnGlobV(char* label,HashMap* map){
     HashMapFirst(map);
     for(Pair* pair = HashMapNext(map); pair!=NULL; pair = HashMapNext(map)){
-        if(compareStringLiterals(label,pair->key))
+        if(strcmp(label,pair->key)==0)
             return pair->value;
     }
     return NULL;
@@ -226,6 +227,8 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
             /* Accept instruction tokens */
             scan_table_accept_any_n(st, 1);
         } else if(strcmp(tp0->value,"align") == 0 || strcmp(tp0->value,"global") == 0) {
+            HashSetAdd(globLabelSet,tp1->value);
+
             /* Accept instruction tokens */
             scan_table_accept_any_n(st, 2);
         }

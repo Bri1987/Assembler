@@ -49,13 +49,3 @@ void split_string(const char* str, char delimiter, char** part1, char** part2) {
     }
 }
 
-int compareStringLiterals(const char* str1, const char* str2) {
-    if (str1 == str2) {
-        printf("String literals are equal.\n");
-        return 0;
-    } else {
-        printf("String literals are not equal.\n");
-        return -1;
-    }
-}
-
