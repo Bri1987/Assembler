@@ -155,7 +155,7 @@ void finalize_shdrs(elf_context *elf) {
 void finalize_sections(elf_context *elf) {
 
     elf_section *shstrtab = &elf->sections[SEC_SHSTRTAB];
-    for (int s = 0; s < NUM_SECTIONS; s++) {
+    for (int s = 1; s < NUM_SECTIONS; s++) {
         // The offset of each header's name (sh_name) is the logical
         // length of the string table before adding the name
         elf->shdrs[s].sh_name = shstrtab->logical_len;
