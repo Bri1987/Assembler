@@ -368,12 +368,12 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
         else if(instruction->opcode == mov && tp2->id == TK_COMMA ){
             //rd
             Operand rd= {0, 0, 0, 0, 0};
-            rd.reg = parse_char_to_reg(tp3->value);
+            rd.reg = parse_char_to_reg(tp1->value);
             rd.isreg = 1;
 
             //rn
             Operand rn= {0, 0, 0, 0, 0};
-            if(tp5->id == TK_IMM){
+            if(tp3->id == TK_IMM){
                 rn.imm = atoi(tp3->value);
                 rn.immisreg = 0;
             } else {

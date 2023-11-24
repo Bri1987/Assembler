@@ -132,9 +132,10 @@ void codegen_cmp(struct codegen_table_st *ct, Instruction* instruction) {
 
 void codegen_mov(struct codegen_table_st *ct, Instruction* instruction) {
     //mov rd,rn
+    //p486 encoding A1
     const uint32_t DP_IMM_BIT = 25;
     const uint32_t DP_OP_BIT  = 21;
-    const uint32_t DP_RN_BIT  = 16;
+    //const uint32_t DP_RN_BIT  = 16;
     const uint32_t DP_RD_BIT  = 12;
     uint32_t inst = 0;
 
@@ -149,9 +150,9 @@ void codegen_mov(struct codegen_table_st *ct, Instruction* instruction) {
         rn = instruction->rn.imm;
 
     inst = (cond_bit           << COND_BIT)
-           | (instruction->imm << DP_IMM_BIT)
+           | (!instruction->rn.immisreg << DP_IMM_BIT)
            | (opcode_bit      << DP_OP_BIT)
-           | (rn               << DP_RN_BIT)
+           | (rn               )
            | (rd  << DP_RD_BIT)
            ;
     codegen_add_inst(ct, inst);
@@ -230,6 +231,10 @@ void codegen_stmfd_ldmfd(struct codegen_table_st *ct, Instruction* instruction) 
            | (instruction->rn.reg  << RN_BIT)
            | (instruction->rd.imm)
            ;
+
+    if(instruction->opcode == ldmfd){
+        inst |= 1 << 20;
+    }
     codegen_add_inst(ct, inst);
 }
 
@@ -379,7 +384,7 @@ void codegen_print_hex(struct codegen_table_st *ct) {
 }
 
 void codegen_programme(struct codegen_table_st *ct){
-    for(int i = 0; i < inst_list->size ;i++){
+    for(int i = 1; i < inst_list->size ;i++){
         Instruction cur_inst = inst_list->elements[i];
         codegen_inst(ct,&cur_inst);
     }
