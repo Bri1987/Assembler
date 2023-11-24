@@ -88,14 +88,14 @@ static void init_shdrs(elf_context *elf) {
                 shdrs[s].sh_flags = SHF_ALLOC | SHF_EXECINSTR;
                 shdrs[s].sh_addralign = sizeof(Elf32_Word);
                 break;
-            case SEC_REL_TEXT:
-                shdrs[s].sh_type = SHT_REL;
-                shdrs[s].sh_flags = SHF_EXECINSTR;
-                shdrs[s].sh_link = SEC_SYMTAB;            //该节中的重定位项所引用的符号信息存储在符号表节中
-                shdrs[s].sh_info = SEC_TEXT;
-                shdrs[s].sh_addralign = sizeof(Elf32_Word);
-                shdrs[s].sh_entsize = sizeof(Elf32_Rel);
-                break;
+//            case SEC_REL_TEXT:
+//                shdrs[s].sh_type = SHT_REL;
+//                shdrs[s].sh_flags = SHF_EXECINSTR;
+//                shdrs[s].sh_link = SEC_SYMTAB;            //该节中的重定位项所引用的符号信息存储在符号表节中
+//                shdrs[s].sh_info = SEC_TEXT;
+//                shdrs[s].sh_addralign = sizeof(Elf32_Word);
+//                shdrs[s].sh_entsize = sizeof(Elf32_Rel);
+//                break;
             case SEC_DATA:
                 shdrs[s].sh_type = SHT_PROGBITS;
                 shdrs[s].sh_flags = SHF_ALLOC | SHF_WRITE;

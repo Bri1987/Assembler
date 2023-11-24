@@ -80,10 +80,10 @@ bool elf_add_instr(elf_context *elf, unsigned int instr) {
     //TODO why
     // Add a relocation for BX instructions. I'm not sure why.
     // Greg guesses for PC-relative data, which follows a BX
-    if (instr >> 4 == ARM_BX_28) {
-        if (!add_rel(&elf->sections[SEC_REL_TEXT], rel_offset))
-            return false;
-    }
+//    if (instr >> 4 == ARM_BX_28) {
+//        if (!add_rel(&elf->sections[SEC_REL_TEXT], rel_offset))
+//            return false;
+//    }
     return true;
 }
 
@@ -163,7 +163,7 @@ void finalize_sections(elf_context *elf) {
         // Build the string table for section header names
         add_str(shstrtab, snames[s]);
     }
-    elf->shdrs[SEC_TEXT].sh_name = 5; //TODO  GNU asm reuses .text from .rel.text
+    //elf->shdrs[SEC_TEXT].sh_name = 5; //TODO  GNU asm reuses .text from .rel.text
 
     // "$a" is an ARM ELF convention marking the beginning of ARM instructions
     elf_section *strtab = &elf->sections[SEC_STRTAB];

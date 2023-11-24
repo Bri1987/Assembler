@@ -7,7 +7,7 @@
 
 #include "elf_std.h"
 
-#define NUM_SECTIONS 9
+#define NUM_SECTIONS 8
 
 /* elf_section represents the body of each section */
 typedef struct {

@@ -12,8 +12,8 @@
 // Section names in the order they appear in the section header table
 static char *snames[NUM_SECTIONS] = {
         "", // The null section has no name
-        "", // TODO .text reuses .rel.text
-        ".rel.text",
+        ".text", // TODO .text reuses .rel.text
+       // ".rel.text",
         ".data",
         ".bss",
         ".ARM.attributes",
