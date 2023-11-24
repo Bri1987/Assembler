@@ -15,7 +15,7 @@
 enum {
     SEC_NULL = 0,
     SEC_TEXT,
-   // SEC_REL_TEXT,
+    SEC_REL_TEXT,
     SEC_DATA,
     SEC_BSS,
     SEC_ARM_ATTRS,
