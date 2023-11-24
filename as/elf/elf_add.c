@@ -3,6 +3,9 @@
 //
 #include "elf_add.h"
 
+extern HashSet* globLabelSet;
+extern HashMap *unknown_instMap;
+
 // grow_and_add() provides dynamically growable buffers
 //为data*提供
 bool grow_and_add(elf_section *sec, void *src, size_t src_len) {
@@ -40,11 +43,36 @@ static bool add_str(elf_section *sec, char *str) {
     return grow_and_add(sec, str, str_len);
 }
 
+//找到重定向表项所在的符号表位置
+int find_symbol(unsigned int offset,HashMap* name_index_symMap){
+    char* label = NULL;
+    HashMapFirst(unknown_instMap);
+    for(Pair *pair = HashMapNext(unknown_instMap); pair!=NULL; pair = HashMapNext(unknown_instMap)){
+        int *p_offset = pair->value;
+        if((*p_offset)*4 == offset){
+            label = pair->key;
+            break;
+        }
+    }
+
+    HashMapFirst(name_index_symMap);
+    for(Pair* pair = HashMapNext(name_index_symMap); pair!=NULL; pair = HashMapNext(name_index_symMap)){
+        if(strcmp(pair->key,label)==0){
+            int *index = pair->value;
+            //+5是因为.text .data这些是固定的
+            return *index + 5;
+        }
+    }
+    return -1;
+}
+
 // add_rel() creates an ELF relocation object for a BX instruction
-static bool add_rel(elf_section *sec, unsigned int offset) {
+static bool add_rel(elf_section *sec, unsigned int offset,HashMap* name_index_symMap) {
+    int index = find_symbol(offset,name_index_symMap);
+
     Elf32_Rel rel = {
             .r_offset = offset,
-            .r_info = ELF32_R_INFO(STB_LOCAL, R_ARM_V4BX),
+            .r_info = ELF32_R_INFO(index, R_ARM_CALL),
     };
     return grow_and_add(sec, &rel, sizeof(Elf32_Rel));
 }
@@ -62,9 +90,21 @@ static bool add_text_symbol(elf_section *sec, unsigned int st_name, int offset, 
     return add_symbol(sec, &sym);
 }
 
+//添加外部函数符号
+static bool add_glob_text_symbol(elf_section *sec, unsigned int st_name, int offset, int binding) {
+    Elf32_Sym sym;
+    memset(&sym, 0, sizeof(sym));
+    sym.st_info = ELF32_ST_INFO(binding, STT_NOTYPE);
+    sym.st_name = st_name;
+    sym.st_shndx = 0;
+    sym.st_value = 0;
+
+    return add_symbol(sec, &sym);
+}
+
 // elf_add_instr() is the public way to add a machine code instruction
 // into the section body for .text
-bool elf_add_instr(elf_context *elf, unsigned int instr) {
+bool elf_add_instr(elf_context *elf, unsigned int instr,HashMap* name_index_symMap) {
     if (!elf || !instr)
         return false;
 
@@ -77,11 +117,8 @@ bool elf_add_instr(elf_context *elf, unsigned int instr) {
     if (!add_int(&elf->sections[SEC_TEXT], instr))
         return false;
 
-    //TODO why
-    // Add a relocation for BX instructions. I'm not sure why.
-    // Greg guesses for PC-relative data, which follows a BX
-    if (instr >> 4 == ARM_BX_28) {
-        if (!add_rel(&elf->sections[SEC_REL_TEXT], rel_offset))
+    if ((instr & ARM_BL_24) == ARM_BL_24) {
+        if (!add_rel(&elf->sections[SEC_REL_TEXT], rel_offset,name_index_symMap))
             return false;
     }
     return true;
@@ -184,6 +221,14 @@ void finalize_sections(elf_context *elf) {
     align_sections(elf);
 }
 
+bool find_glob_text_name(char* name){
+    HashSetFirst(globLabelSet);
+    for(char* label = HashSetNext(globLabelSet); label!=NULL; label = HashSetNext(globLabelSet)){
+        if(strcmp(label,name)==0)
+            return true;
+    }
+    return false;
+}
 
 // elf_add_symbol() is the public way to add a human-readable name, and
 // into the section bodies for .symtab and .strtab
@@ -205,7 +250,11 @@ bool elf_add_symbol(elf_context *elf, char *name, int offset, int binding) {
         symtab = &elf->sections[SEC_SYMTAB];
     else
         symtab = &elf->sections[SEC_GSYMTAB];
-    if (!add_text_symbol(symtab, strtab_off, offset, binding))
+    if(find_glob_text_name(name)){
+        if (!add_glob_text_symbol(symtab, strtab_off, offset, binding))
+            return false;
+    }
+    else if (!add_text_symbol(symtab, strtab_off, offset, binding))
         return false;
 
     return true;

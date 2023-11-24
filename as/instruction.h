@@ -108,6 +108,7 @@ typedef struct Instruction {
 
     char label[MAX_LABEL_LENGTH]; // label of the line this Instruction appears on
     char branch_label[MAX_LABEL_LENGTH];  // label used by branch or jump instructions
+    int index;          //标记是第几条
 }Instruction;
 
 struct Instruction* newInstructionBlank();

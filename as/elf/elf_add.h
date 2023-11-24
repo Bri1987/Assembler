@@ -8,6 +8,7 @@
 #include "elf.h"
 #include "elf_std.h"
 #include "elf_init.h"
+#include "utility.h"
 
 // Section names in the order they appear in the section header table
 static char *snames[NUM_SECTIONS] = {
@@ -24,7 +25,7 @@ static char *snames[NUM_SECTIONS] = {
 
 bool grow_and_add(elf_section *sec, void *src, size_t src_len);
 bool add_symbol(elf_section *sec, Elf32_Sym *sym);
-bool elf_add_instr(elf_context *elf, unsigned int instr);
+bool elf_add_instr(elf_context *elf, unsigned int instr,HashMap* name_index_symMap);
 void finalize_shdrs(elf_context *elf);
 void finalize_sections(elf_context *elf);
 

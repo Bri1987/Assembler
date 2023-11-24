@@ -26,12 +26,24 @@ void addLabels(struct codegen_table_st *ct){
             if(strcmp(p_label,p->key)==0){
                 ct->publics[ct->public_count] = label;
                 ct->public_count++;
+                //TODO 这里读到就清除了，不知道行不行
+                HashSetRemove(globLabelSet,p_label);
                 break;
             }
         }
     }
 
-
+    //外部的调用符号也要加入，比如putint
+    HashSetFirst(globLabelSet);
+    for(char* p_label = HashSetNext(globLabelSet); p_label != NULL; p_label = HashSetNext(globLabelSet)){
+        codegen_global_pair *label = (codegen_global_pair*) malloc(sizeof (codegen_global_pair));
+        strcpy(label->label,p_label);
+        label->offset = 0;
+        ct->publics[ct->public_count] = label;
+        ct->public_count++;
+        ct->labels[ct->label_count] = label;
+        ct->label_count++;
+    }
 }
 
 void codegen_error(char *err) {
@@ -292,7 +304,7 @@ void codegen_bl(struct codegen_table_st *ct, Instruction* instruction) {
         uint32_t opcode_bit = codegen_opcode_to_bit(instruction->opcode);
         inst = (cond_bit           << COND_BIT)
                |(opcode_bit       << 24)
-               |(instruction->rn.imm)
+               |(instruction->rd.imm)
                ;
     } else {
         //bl rd
@@ -407,10 +419,10 @@ void codegen_elf_write(struct codegen_table_st *ct, char *path){
 
     addLabels(ct);
 
+    //记录符号和Index的对应关系
+    HashMap* name_index_symbolMap = HashMapInit();
     //加入符号表
     for(int i = 0; i < ct->label_count; i++) {
-        //TODO labels还没加东西
-        //TODO lables和publics还没搞清楚
         pl = ct->labels[i];
         if (codegen_is_public_label(ct, pl)) {
             binding = STB_GLOBAL;
@@ -418,11 +430,15 @@ void codegen_elf_write(struct codegen_table_st *ct, char *path){
             binding = STB_LOCAL;
         }
         elf_add_symbol(&elf, pl->label, pl->offset, binding);
+
+        int* index = malloc(4);
+        *index = i + 1;
+        HashMapPut(name_index_symbolMap,pl->label,index);
     }
 
     //填充.text
     for(int i = 0; i < inst_list->size ;i++){
-        elf_add_instr(&elf,ct->table[i]);
+        elf_add_instr(&elf,ct->table[i],name_index_symbolMap);
     }
 
     FILE *f = fopen(path, "w");

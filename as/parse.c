@@ -12,6 +12,7 @@ extern struct ArrayList *inst_list;
 extern HashMap *labelMap;
 extern HashMap *globVMap;
 extern HashSet *globLabelSet;
+extern HashMap *unknown_instMap;
 
 HashSet *b_inst_set;
 HashSet *global_dataSet;           //存与全局变量相关指令的
@@ -120,6 +121,7 @@ signed int handle_multi_reglist(struct scan_table_st *st, int begin){
     return val;
 }
 
+//TODO 这个对instruction的影响加载不到inst
 void handle_b_inst(){
     HashSetFirst(b_inst_set);
     for(Instruction* instruction = HashSetNext(b_inst_set); instruction!=NULL; instruction = HashSetNext(b_inst_set)) {
@@ -127,7 +129,15 @@ void handle_b_inst(){
         if(pc == NULL){
             pc = returnLabel(instruction->branch_label,labelMap);
         }
-        instruction->rd.imm = *pc;
+        if(pc == NULL){
+            instruction->rd.imm = 0xffff;
+            HashSetAdd(globLabelSet,instruction->branch_label);
+            int* count = (malloc(4));
+            *count = instruction->index;
+            HashMapPut(unknown_instMap,instruction->branch_label, count);
+        }
+        else
+            instruction->rd.imm = *pc;
     }
 }
 
@@ -183,12 +193,13 @@ void parse_program(struct scan_table_st *st){
 
         if(inst != NULL){
             instruction = *inst;
+            inst->index = count - 1;
             addLast(inst_list, instruction);
+            count++;
         }
         parse_eols(st);
 
-        count++;
-        printf("%d\n",count);
+       // printf("%d\n",count);
     }
     handle_b_inst();
     handle_global();
@@ -317,6 +328,8 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
                 } else {
                     //还没存到这里
                     strcpy(instruction->branch_label,tp1->value);
+                    //TODO 不太准确，但先给一个默认值
+                    rd.imm = 0xfffffe;
                     HashSetAdd(b_inst_set,instruction);
                 }
             } else{

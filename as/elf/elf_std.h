@@ -176,9 +176,10 @@ typedef struct {
 
 // High 28 bits of BX to identify needed relocations
 #define ARM_BX_28 0xe12fff1
+#define ARM_BL_24 0xfffffe
 
 // This appears to be the only R_TYPE code we need (of a long list)
-#define R_ARM_V4BX 40
+#define R_ARM_CALL 0x1c
 
 #define ELF32_R_SYM(i) ((i)>>8)
 #define ELF32_R_TYPE(i) ((unsigned char)(i))
