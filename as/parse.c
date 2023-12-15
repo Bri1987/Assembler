@@ -66,13 +66,12 @@ int parse_char_to_reg(char *s) {
         }
     }
 
-    //TODO 走到这里来说明是多寄存器
+    //走到这里来说明是多寄存器
 
     return -1;
 }
 
 void parse_opcode(struct scan_token_st *tp, Instruction* instruction) {
-    //TODO movw在哪里处理
     enum Opcode opcode = parse_char_to_opcode(tp->value);
     if(opcode != invalid) {
         //无cond
@@ -125,6 +124,7 @@ void handle_b_inst(){
     for(Instruction* instruction = HashSetNext(b_inst_set); instruction!=NULL; instruction = HashSetNext(b_inst_set)) {
         int *pc = HashMapGet(labelMap,instruction->branch_label);
         if(pc == NULL){
+            printf("null\n");
             pc = returnLabel(instruction->branch_label,labelMap);
         }
         instruction->rd.imm = *pc;
@@ -135,23 +135,23 @@ void handle_global() {
     //将地址放到rn.imm
     HashSetFirst(global_dataSet);
     for(Instruction* instruction = HashSetNext(global_dataSet); instruction!=NULL; instruction = HashSetNext(global_dataSet)) {
-        //TODO 可能找不到
+
         codegen_global_pair *p = HashMapGet(globVMap,instruction->branch_label);
         if(p == NULL)
             p = returnGlobV(instruction->branch_label,globVMap);
-        assert(p != NULL);       //TODO 先这样吧
+        assert(p != NULL);
         instruction->rn.imm = p->offset;
     }
 }
 
-bool getLabel(char* label,HashMap* map){
-    HashMapFirst(map);
-    for(Pair* pair = HashMapNext(map); pair!=NULL; pair = HashMapNext(map)){
-        if(strcmp(label,pair->key)==0)
-            return true;
-    }
-    return false;
-}
+//bool getLabel(char* label,HashMap* map){
+//    HashMapFirst(map);
+//    for(Pair* pair = HashMapNext(map); pair!=NULL; pair = HashMapNext(map)){
+//        if(strcmp(label,pair->key)==0)
+//            return true;
+//    }
+//    return false;
+//}
 
 int* returnLabel(char* label,HashMap* map){
     HashMapFirst(map);
@@ -214,7 +214,6 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
     tp2 = scan_table_get(st, 2);
     //.text , .arch armv7ve
     //TODO 需要的特殊的, 比如.data这种还没处理
-    //TODO 伪指令
     if(tp0->id == TK_DIR) {
         if(strcmp(tp0->value,"data") == 0){
             data_reach = true;
@@ -250,7 +249,9 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
 
     } else if (tp0->id == TK_IDENT && tp1->id == TK_COLON && !data_reach) {
         instruction = newInstructionBlank();
-        strncpy(instruction->label, tp0->value, SCAN_TOKEN_LEN);
+        //strncpy(instruction->label, tp0->value, SCAN_TOKEN_LEN);
+        if(pc_count != 0)
+            instruction = NULL;
 
         int *cur_pc = malloc(4);
         *cur_pc = pc_count;
@@ -308,11 +309,15 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
                 //是imm
                 rd.isreg = 0;
 
-                if(getLabel(tp1->value,labelMap)){
+                if(returnLabel(tp1->value,labelMap)){
                     int *b_pc = HashMapGet(labelMap,tp1->value);
                     if(b_pc == NULL)
                         b_pc = returnLabel(tp1->value,labelMap);
-                    rd.imm = *b_pc;
+                    //TODO 为什么还要减个4
+                    rd.imm = (*b_pc - 4 -4 - pc_count)/4;
+                    //小于0则将高八位清0
+                    if(rd.imm < 0)
+                        rd.imm = rd.imm & 0x00ffffff;
                     rd.isreg = 0;
                 } else {
                     //还没存到这里
@@ -379,6 +384,7 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
             } else {
                 rn.reg = parse_char_to_reg(tp3->value);
                 rn.isreg = 1;
+                rn.immisreg = 1;
             }
 
             instruction->rn = rn;
@@ -399,14 +405,13 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
 
             if(tp3->id == TK_COLON) {
                 //一定还没读到.data
-                //TODO 暂时借用一下Branch_label
+                // 暂时借用一下Branch_label
                 strcpy(instruction->branch_label,tp6->value);
                 HashSetAdd(global_dataSet,instruction);
 
                 /* Accept instruction tokens */
                 scan_table_accept_any_n(st, 7);
             } else {
-                //TODO 处理一下0x
                 scan_table_accept_any_n(st, 7);
             }
             pc_count += 4;
@@ -416,7 +421,7 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
 
             //rn
             Operand rn= {0, 0, 0, 0, 0};
-            rn.reg = parse_char_to_reg(tp3->value);
+            rn.reg = parse_char_to_reg(tp1->value);
             rn.isreg = 1;
 
             Operand rd= {0, 0, 0, 0, 0};
@@ -469,7 +474,6 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
             pc_count += 4;
         }
         else if(instruction->opcode == stmfd || instruction->opcode == ldmfd) {
-            //TODO !又单列了，得改
             //stmfd rn ,rd
             //ldmfd rn ,rd
             Operand rn= {0, 0, 0, 0, 0};
@@ -481,7 +485,7 @@ struct Instruction* parse_instruction(struct scan_table_st *st){
                 begin++;
             }
 
-            //TODO 应该一定是multi_reg吧
+            //应该一定是multi_reg吧
             int val = handle_multi_reglist(st, begin);
             Operand rd= {0, 0, 0, 0, 0};
             rd.immisreg = 1;
@@ -569,7 +573,7 @@ char* print_opcode(enum Opcode opcode) {
     return NULL;
 }
 
-//TODO 打印是有问题的
+// 打印是不完善的
 void print_instruction(){
     for(int i = 0; i < inst_list->size ;i++){
         struct Instruction instruction = inst_list->elements[i];

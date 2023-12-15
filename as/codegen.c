@@ -26,12 +26,23 @@ void addLabels(struct codegen_table_st *ct){
             if(strcmp(p_label,p->key)==0){
                 ct->publics[ct->public_count] = label;
                 ct->public_count++;
+                HashSetRemove(globLabelSet,p_label);
                 break;
             }
         }
     }
 
-
+    //外部的调用符号也要加入，比如putint
+    HashSetFirst(globLabelSet);
+    for(char* p_label = HashSetNext(globLabelSet); p_label != NULL; p_label = HashSetNext(globLabelSet)){
+        codegen_global_pair *label = (codegen_global_pair*) malloc(sizeof (codegen_global_pair));
+        strcpy(label->label,p_label);
+        label->offset = 0;
+        ct->publics[ct->public_count] = label;
+        ct->public_count++;
+        ct->labels[ct->label_count] = label;
+        ct->label_count++;
+    }
 }
 
 void codegen_error(char *err) {
@@ -41,7 +52,6 @@ void codegen_error(char *err) {
 
 void codegen_table_init(struct codegen_table_st *ct) {
     ct->len = 0;
-    ct->next = 0;
 }
 
 void codegen_add_inst(struct codegen_table_st *ct, uint32_t inst) {
@@ -154,7 +164,7 @@ void codegen_mov(struct codegen_table_st *ct, Instruction* instruction) {
            | (opcode_bit      << DP_OP_BIT)
            | (rn               )
            | (rd  << DP_RD_BIT)
-           ;
+            ;
     codegen_add_inst(ct, inst);
 }
 
@@ -169,6 +179,7 @@ void codegen_ldr(struct codegen_table_st *ct, Instruction* instruction) {
     const uint32_t OP_BIT = 25;
     const uint32_t U_BIT = 23;
     const uint32_t W_BIT = 21;
+    const uint32_t P_BIT = 24;
 
     uint32_t inst = 0;
     uint32_t cond_bit = codegen_cond_to_bit(instruction->cond);
@@ -180,9 +191,10 @@ void codegen_ldr(struct codegen_table_st *ct, Instruction* instruction) {
            |(opcode_bit        << OP_BIT)
            |(1                 << 20)
            |(0                 << 22)
-            |(1                 << U_BIT)
-            |(instruction->shift_amount)
-           ;
+            |(1                  << P_BIT)
+           |(1                 << U_BIT)
+           |(instruction->shift_amount)
+            ;
     codegen_add_inst(ct, inst);
 }
 
@@ -197,6 +209,7 @@ void codegen_str(struct codegen_table_st *ct, Instruction* instruction) {
     const uint32_t OP_BIT = 25;
     const uint32_t U_BIT = 23;
     const uint32_t W_BIT = 21;
+    const uint32_t P_BIT = 24;
 
     uint32_t inst = 0;
     uint32_t cond_bit = codegen_cond_to_bit(instruction->cond);
@@ -209,6 +222,7 @@ void codegen_str(struct codegen_table_st *ct, Instruction* instruction) {
            |(0                 << 20)        //str
            |(0                 << 22)
            |(1                 << U_BIT)        //U
+           |(1                  << P_BIT)
            |(instruction->rd.writeback   << W_BIT)       //W
            |(instruction->shift_amount)
             ;
@@ -230,7 +244,7 @@ void codegen_stmfd_ldmfd(struct codegen_table_st *ct, Instruction* instruction) 
            | (opcode_bit        << OP_BIT)
            | (instruction->rn.reg  << RN_BIT)
            | (instruction->rd.imm)
-           ;
+            ;
 
     if(instruction->opcode == ldmfd){
         inst |= 1 << 20;
@@ -248,8 +262,8 @@ void codegen_push_pop(struct codegen_table_st *ct, Instruction* instruction) {
     uint32_t opcode_bit = codegen_opcode_to_bit(instruction->opcode);
 
     inst = (cond_bit           << COND_BIT)
-            |(opcode_bit       << OP_BIT)
-            |(instruction->rn.imm)
+           |(opcode_bit       << OP_BIT)
+           |(instruction->rn.imm)
             ;
     codegen_add_inst(ct, inst);
 }
@@ -292,14 +306,14 @@ void codegen_bl(struct codegen_table_st *ct, Instruction* instruction) {
         uint32_t opcode_bit = codegen_opcode_to_bit(instruction->opcode);
         inst = (cond_bit           << COND_BIT)
                |(opcode_bit       << 24)
-               |(instruction->rn.imm)
-               ;
+               |(instruction->rd.imm)
+                ;
     } else {
         //bl rd
         const uint32_t bx_code = 0b000100101111111111110011;
         inst = (cond_bit << COND_BIT)
-                | (bx_code << 4)
-                | instruction->rd.reg;
+               | (bx_code << 4)
+               | instruction->rd.reg;
     }
     codegen_add_inst(ct, inst);
 }
@@ -322,10 +336,10 @@ void codegen_movw_movt(struct codegen_table_st *ct, Instruction* instruction) {
     }
 
     inst = (cond_bit                  << COND_BIT)
-            | (opcode_bit             << OP_BIT)
-            | (instruction->rd.reg    << Rd_BIT)
-            | ((imm16 >> 12)          << IMM4_BIT)              //取16位中的前4位
-            | (imm16 & 0xFFF)                                   //取16位中的后12位
+           | (opcode_bit             << OP_BIT)
+           | (instruction->rd.reg    << Rd_BIT)
+           | ((imm16 >> 12)          << IMM4_BIT)              //取16位中的前4位
+           | (imm16 & 0xFFF)                                   //取16位中的后12位
             ;
     codegen_add_inst(ct, inst);
 }
@@ -409,8 +423,6 @@ void codegen_elf_write(struct codegen_table_st *ct, char *path){
 
     //加入符号表
     for(int i = 0; i < ct->label_count; i++) {
-        //TODO labels还没加东西
-        //TODO lables和publics还没搞清楚
         pl = ct->labels[i];
         if (codegen_is_public_label(ct, pl)) {
             binding = STB_GLOBAL;

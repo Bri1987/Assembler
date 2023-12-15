@@ -16,7 +16,6 @@
 struct codegen_table_st {
     uint32_t table[CODEGEN_TABLE_LEN];
     int len;
-    int next;
     struct codegen_global_pair *labels[CODEGEN_TABLE_LEN];
     int label_count;
     struct codegen_global_pair *publics[CODEGEN_TABLE_LEN];

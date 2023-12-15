@@ -77,9 +77,6 @@ bool elf_add_instr(elf_context *elf, unsigned int instr) {
     if (!add_int(&elf->sections[SEC_TEXT], instr))
         return false;
 
-    //TODO why
-    // Add a relocation for BX instructions. I'm not sure why.
-    // Greg guesses for PC-relative data, which follows a BX
 //    if (instr >> 4 == ARM_BX_28) {
 //        if (!add_rel(&elf->sections[SEC_REL_TEXT], rel_offset))
 //            return false;

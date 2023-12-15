@@ -119,7 +119,7 @@ char * scan_token(char *p, char *end, struct scan_token_st *tp) {
         if(*(p+1) != ':'){
             p = scan_signed_integer(p + 1, end, tp);
         } else {
-            //TODO 不确定怎么处理
+            //TODO 不确定怎么处理最好
             // movw    r3,#:lower16:g
             // movt    r3,#:upper16:g
             p = p + 1;
@@ -151,9 +151,6 @@ char * scan_token(char *p, char *end, struct scan_token_st *tp) {
     else if (*p == '\n') {
         p = scan_read_token(tp, p, 1, TK_EOL);
     }  else {
-//        printf("%c",*p);
-//        scan_error("Invalid character");
-        //TODO 跳过处理
         p += 1;
         p = scan_token(p, end, tp);
     }

@@ -11,7 +11,6 @@
 #include "elf_add.h"
 
 // Section indexes
-//TODO SEC_RELA_DATA
 enum {
     SEC_NULL = 0,
     SEC_TEXT,
