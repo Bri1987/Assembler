@@ -14,7 +14,7 @@ for file_name in *.s; do
     fi
 
     test_name=$(basename "$file_name" .s)
-    echo "file name $file_name"
+    echo -e "\n\n file name $file_name"
     t=out/$test_name
 
     mkdir -p "$t"
