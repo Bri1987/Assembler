@@ -123,3 +123,10 @@ qemu-arm test2
 得到正确输出，打印出时间与40：
 
 ![image-20231124174928026](./img/img2.png)
+
+## 测试脚本
+
+在test目录下加入`sy.sh`，可以在makefile的`make test`中直接调用
+
+同主分支
+
