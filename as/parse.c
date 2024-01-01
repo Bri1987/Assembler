@@ -188,7 +188,7 @@ void parse_program(struct scan_table_st *st){
         parse_eols(st);
 
         count++;
-        printf("%d\n",count);
+        //printf("%d\n",count);
     }
     handle_b_inst();
     handle_global();

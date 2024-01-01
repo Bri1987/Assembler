@@ -190,6 +190,65 @@ qemu-arm test2
 
 ![image-20231124174928026](./img/img2.png)
 
+### 测试脚本
+
+增加了测试脚本，可以一次性运行所有.s文件进行测试，即test文件下的`sy.sh`，可在Makefile中的`make test`调用
+
+```sh
+#!/bin/bash
+
+script_dir=$(dirname "$(realpath "$0")")
+
+# 切换到当前脚本所在的目录
+cd "$script_dir" || exit
+
+# 遍历当前文件夹下的所有 .s 文件
+for file_name in *.s; do
+    # 检查文件是否存在
+    if [ ! -f "$file_name" ]; then
+        echo "文件 $file_name 不存在"
+        continue  # 继续下一个文件
+    fi
+
+    test_name=$(basename "$file_name" .s)
+    echo "file name $file_name"
+    t=out/$test_name
+
+    mkdir -p "$t"
+
+    # 执行文件
+    chmod +x "$file_name"  # 添加执行权限
+    ../cmake-build-debug/as_final  -o "$t"/res "$file_name"
+    arm-linux-gnueabihf-gcc -static "$t"/res -o "$t"/fi_res
+    qemu-arm "$t"/fi_res
+    echo $?
+done
+```
+
+Makefile
+
+```makefile
+build:
+	rm -rf cmake-build-debug
+	mkdir cmake-build-debug
+	cd cmake-build-debug && cmake ..
+	make -C cmake-build-debug
+
+test:
+	chmod 777 ./test/sy.sh
+	@printf '\e[32mBegin Test\e[0m\n'
+	./test/sy.sh
+	@printf '\e[32mPassed all tests\e[0m\n'
+
+clean:
+	rm -rf test/out/
+	rm -rf ./cmake-build-debug/as_final
+
+.PHONY: build clean test
+```
+
+
+
 ## 项目结构
 
 ![image-20231215134732792](./img/image-20231215134732792.png)
